@@ -129,7 +129,7 @@ pub enum SearchFieldConfig {
         #[serde(default = "default_as_true")]
         stored: bool,
     },
-    Key,
+    Key(Box<SearchFieldConfig>),
     Ctid,
 }
 
@@ -331,9 +331,12 @@ impl SearchIndexSchema {
 
         let mut key_index = 0;
         let mut ctid_index = 0;
-        for (index, (name, config, field_type)) in fields.into_iter().enumerate() {
+        for (index, (name, mut config, field_type)) in fields.into_iter().enumerate() {
             match &config {
-                SearchFieldConfig::Key => key_index = index,
+                SearchFieldConfig::Key(key_config) => {
+                    config = *key_config.clone();
+                    key_index = index;
+                },
                 SearchFieldConfig::Ctid => ctid_index = index,
                 _ => {}
             }
