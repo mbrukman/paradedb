@@ -72,24 +72,11 @@ impl SearchIndex {
         // to be rebuilt and this method is called again.
         directory.remove().map_err(SearchIndexError::from)?;
 
-        pgrx::info!("creating schema from fields: {:?}", fields);
         let schema = SearchIndexSchema::new(fields)?;
-        let settings = IndexSettings {
-            // Fields should be returned in the order of their key_field (if their bm25 scores match).
-            // Pre-sorting these fields at insert time saves work at query time.
-            sort_by_field: Some(IndexSortByField {
-                field: schema.key_field().name.as_ref().into(),
-                order: Order::Asc,
-            }),
-            // docstore_compress_dedicated_thread: false, // Must run on single thread, or pgrx will panic
-            ..Default::default()
-        };
 
         let tantivy_dir_path = directory.tantivy_dir_path(true)?;
-        pgrx::info!("schema key: {:?}", schema.key_field().name);
         let mut underlying_index = Index::builder()
             .schema(schema.schema.clone())
-            .settings(settings.clone())
             .create_in_dir(tantivy_dir_path)
             .expect("failed to create index");
 
