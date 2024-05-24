@@ -6,8 +6,8 @@ use pgrx::{
 use serde::{Deserialize, Deserializer, Serialize};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex, PoisonError};
-use tantivy::{query::QueryParser, Executor, Index, IndexSettings, Searcher};
-use tantivy::{IndexReader, IndexSortByField, IndexWriter, Order, TantivyError};
+use tantivy::{query::QueryParser, Executor, Index, Searcher};
+use tantivy::{IndexReader, IndexWriter, TantivyError};
 use thiserror::Error;
 use tokenizers::{create_normalizer_manager, create_tokenizer_manager};
 use tracing::{error, info};
